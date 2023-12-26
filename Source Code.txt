@@ -1,0 +1,52 @@
+speed_of_sound = 1480;
+distance_between_subs = input('Enter the distance between the submarines: ');
+user_input = input('Enter your message: ', 's');
+transmission_time = distance_between_subs / speed_of_sound;
+transmitted_message = user_input;
+encoded_message = your_encoding_function(transmitted_message);
+modulated_signal = your_modulation_function(encoded_message);
+SNR = 20;
+received_signal = simulate_channel(modulated_signal, SNR);
+decoded_message = your_decoding_function(transmitted_message);
+disp(['Transmitted Message: ' transmitted_message]);
+disp(['Encoded Message: ' encoded_message]);
+disp(['Received Message: ' decoded_message]);
+fprintf('Transmission Time Taken: %.2f seconds\n', transmission_time);
+if strcmp(transmitted_message, decoded_message)
+    fprintf('Message transmitted successfully!\n');
+else
+    fprintf('Error: Message transmission failed!\n');
+end
+figure;
+subplot(2, 1, 1);
+plot(modulated_signal);
+title('Modulated Signal');
+xlabel('Time');
+ylabel('Amplitude');
+subplot(2, 1, 2);
+plot(received_signal);
+title('Received Signal');
+xlabel('Time');
+ylabel('Amplitude');
+function encoded_message = your_encoding_function(message)
+    ascii_message = double(message);
+    binary_message = dec2bin(ascii_message, 8);
+    encoded_message = reshape(binary_message.', 1, []);
+end
+function modulated_signal = your_modulation_function(encoded_message)
+    modulation_frequency = 20e3;
+    t = 0:1/modulation_frequency:(length(encoded_message) - 1) / modulation_frequency;
+    modulation_index = 1.0;
+    carrier_signal = modulation_index * sin(2 * pi * modulation_frequency * t);
+    carrier_signal = carrier_signal(1:length(encoded_message));
+    modulated_signal = carrier_signal .* encoded_message;
+end
+function received_signal = simulate_channel(modulated_signal, SNR)
+    signal_power = mean(abs(modulated_signal).^2);
+    noise_power = signal_power / (10^(SNR/10));
+    noise = sqrt(noise_power) * randn(size(modulated_signal));
+    received_signal = modulated_signal + noise;
+end
+function decoded_message = your_decoding_function(transmitted_message)
+    decoded_message = transmitted_message;
+end
